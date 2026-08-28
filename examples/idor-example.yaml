@@ -1,0 +1,39 @@
+title: "IDOR on document API exposes cross-user records"
+researcher: "Sushant Bhardwaj"
+email: "sushant.bhardwaj.9th.c@example.com"
+asset: "lab.local"
+endpoint: "GET /api/docs/{id}"
+vuln_type: "Insecure Direct Object Reference (IDOR)"
+cwe: "CWE-639"
+program: "Responsible Disclosure"
+summary: >
+  An authenticated user can retrieve another user's documents by substituting
+  the document ID. The API does not verify resource ownership.
+steps:
+  - Authenticate as User A and create/list a document (id=1001).
+  - Authenticate as User B.
+  - Request GET /api/docs/1001 using User B's session.
+  - Confirm User A's document body (including sensitive fields) is returned.
+request: |
+  GET /api/docs/1001 HTTP/1.1
+  Host: 127.0.0.1:5055
+  Authorization: Bearer [REDACTED]
+response: |
+  HTTP/1.1 200 OK
+  {"id":"1001","owner_id":1,"title":"Alice NDA","ssn":"[REDACTED]"}
+impact: >
+  Horizontal privilege escalation across all document IDs. Sensitive fields may
+  include personal identifiers depending on the object schema.
+remediation: >
+  Bind authorization to the authenticated principal. Reject requests where
+  document.owner_id does not match the caller (unless admin with audit).
+  Add automated regression tests for cross-user access.
+unauthenticated: false
+exposes_pii: true
+exposes_financial: false
+privilege_escalation: true
+easy_exploit: true
+widespread: true
+timeline:
+  - "2026-08-01 — Vulnerability identified in authorized lab"
+  - "2026-08-01 — Report drafted with disclose-cli"
