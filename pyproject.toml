@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "disclose-cli"
+version = "1.0.0"
+description = "Responsible disclosure report factory — Markdown + PDF for CERT-In / HackerOne / VDP style reports"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Sushant Bhardwaj" }]
+keywords = ["security", "disclosure", "bugbounty", "cert-in", "vdp", "reporting"]
+dependencies = [
+  "click>=8.1",
+  "pyyaml>=6.0",
+  "rich>=13.0",
+  "reportlab>=4.0",
+]
+
+[project.scripts]
+disclose-cli = "disclose_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["disclose_cli*"]
+
+[tool.setuptools.package-data]
+disclose_cli = ["templates/*.md", "templates/*.yaml"]
